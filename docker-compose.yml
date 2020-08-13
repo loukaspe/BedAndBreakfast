@@ -1,20 +1,30 @@
 version: "3"
 services:
 
+  web:
+    build: ./devenv/web
+    stdin_open: true
+    container_name: web
+    volumes:
+      - ./front-end:/app
+    ports:
+      - 3000:3000
+    environment:
+      - CHOKIDAR_USEPOLLING=true
   app:
     image: nginx:latest
     ports:
       - 80:80
     volumes:
       - ./devenv/nginx/nginx.conf:/etc/nginx/conf.d/default.conf:cached
-      - ./app/public:/app/public:cached
+      - ./back-end/public:/app/public:cached
     depends_on:
       - php
 
   php:
     build: ./devenv/php/
     volumes:
-      - ./app:/app:cached
+      - ./back-end:/app:cached
       - ./php/php.ini:/usr/local/etc/php/php.ini
     depends_on:
       - db
