@@ -1,0 +1,2 @@
+1. Google Maps instead of OpenStreetMap
+2. Room min rent days field omitted for simplicity and time
