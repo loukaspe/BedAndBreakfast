@@ -19,10 +19,10 @@ php-composer-run:
 		--rm \
 		--tty \
 		--interactive \
-		--workdir=/app \
+		--workdir=/back-end \
 		--user $(shell id -u):$(shell id -g) \
 		--env COMPOSER_CACHE_DIR=/vendor-cache \
-		--volume "$(PWD)/app":/app \
+		--volume "$(PWD)/back-end":/app \
 		--volume "$(PWD)/vendor-cache":/vendor-cache \
 		php-composer ${COMMAND}
 
