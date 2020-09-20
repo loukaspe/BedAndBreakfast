@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
-use App\Entity\room;
+use App\Entity\Room;
+use App\Entity\User;
 use App\Repository\RoomRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Exception;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
@@ -17,27 +17,25 @@ use Symfony\Component\Routing\Annotation\Route;
  * @package App\Controller
  * @Route("/api", name="roomApi")
  */
-class RoomController extends AbstractController
+class RoomController extends ApiController
 {
     /**
      * @param RoomRepository $roomRepository
      * @return JsonResponse
-     * @Route("/rooms", name="rooms", methods={"GET"})https://www.airbnb.gr/rooms/39057053?check_in=2020-09-19&check_out=2020-09-25&previous_page_section_name=1000&federated_search_id=a66f9069-d9cb-41d8-8a13-9989028d3db7
+     * @Route("/rooms", name="rooms", methods={"GET"})
      */
-    public function getRooms(RoomRepository $roomRepository){
+    public function getRooms(RoomRepository $roomRepository)
+    {
 
         try{
             $data = $roomRepository->findAll();
         } catch(Exception $exception) {
-            $data = [
-                'status' => 500,
-                'message' => "Tecnhical Issue.",
-            ];
-
-            return $this->response($data, 500);
+            return $this
+                ->setStatusCode(500)
+                ->respondWithErrors("Technical Issue.");
         }
 
-        return $this->response($data, 200);
+        return $this->respondWithSuccess($data);
     }
 
     /**
@@ -63,9 +61,35 @@ class RoomController extends AbstractController
                 || !$request->get('latitude')
                 || !$request->get('squareMeters')
                 || !$request->get('floor')
-                || !$request->get('heating')
                 || !$request->get('description')
+                || !$request->get('roomType')
+                || !$request->get('totalOccupancy')
+                || !$request->get('totalBathrooms')
+                || !$request->get('totalBedrooms')
+                || !$request->get('totalBeds')
+                || !$request->get('hasHeating')
+                || !$request->get('hasAirConditioning')
+                || !$request->get('hasKitchen')
+                || !$request->get('hasLivingRoom')
+                || !$request->get('hasTV')
+                || !$request->get('hasWifi')
+                || !$request->get('hasParking')
+                || !$request->get('hasElevator')
+                || !$request->get('isSmokingInsideAllowed')
+                || !$request->get('arePetsAllowed')
+                || !$request->get('arePartiesAllowed')
+                || !$request->get('userId')
             ) {
+                //TODO: Explicit Exception
+                throw new Exception();
+            }
+
+            /** @var User $user */
+            $user = $this->getDoctrine()
+                ->getRepository(User::class)
+                ->find($request->get('userId'));
+
+            if( empty($user) || !isset($user)) {
                 //TODO: Explicit Exception
                 throw new Exception();
             }
@@ -76,55 +100,55 @@ class RoomController extends AbstractController
             $room->setLatitude($request->get('latitude'));
             $room->setSquareMeters($request->get('squareMeters'));
             $room->setFloor($request->get('floor'));
-            $room->setHeating($request->get('heating'));
             $room->setDescription($request->get('description'));
+            $room->setRoomType($request->get('roomType'));
+            $room->setTotalOccupancy($request->get('totalOccupancy'));
+            $room->setTotalBathrooms($request->get('totalBathrooms'));
+            $room->setTotalBedrooms($request->get('totalBedrooms'));
+            $room->setTotalBeds($request->get('totalBeds'));
+            $room->setHasHeating($request->get('hasHeating'));
+            $room->setHasAirConditioning($request->get('hasAirConditioning'));
+            $room->setHasKitchen($request->get('hasKitchen'));
+            $room->setHasLivingRoom($request->get('hasLivingRoom'));
+            $room->setHasTV($request->get('hasTV'));
+            $room->setHasWifi($request->get('hasWifi'));
+            $room->setHasParking($request->get('hasParking'));
+            $room->setHasElevator($request->get('hasElevator'));
+            $room->setIsSmokingInsideAllowed($request->get('isSmokingInsideAllowed'));
+            $room->setArePetsAllowed($request->get('arePetsAllowed'));
+            $room->setArePartiesAllowed($request->get('arePartiesAllowed'));
+//            $room->setOwner($user);
+
+            $user->addRoom($room);
+
+            $entityManager->persist($user);
             $entityManager->persist($room);
             $entityManager->flush();
 
-            $data = [
-                'status' => 200,
-                'success' => "Room added successfully",
-            ];
-
-            return $this->response($data, 200);
+            return $this->respondWithSuccess("Room added successfully");
 
         } catch(Exception $exception){
-            $data = [
-                'status' => 422,
-                'message' => "Data input is not valid.",
-                'errorMessage' => $exception->getMessage()
-            ];
-            return $this->response($data, 422);
+            return $this->setStatusCode(422)
+                ->respondWithErrors("Data input is not valid.". $exception->getMessage());
         }
-
     }
 
-
     /**
-     * @param roomRepository $roomRepository
+     * @param RoomRepository $roomRepository
      * @param $id
      * @return JsonResponse
      * @Route("/rooms/{id}", name="roomsGet", methods={"GET"})
      */
-    public function getRoom(roomRepository $roomRepository, int $id)
+    public function getRoom(RoomRepository $roomRepository, int $id)
     {
         $room = $roomRepository->find($id);
 
         if (!$room){
-            $data = [
-                'status' => 404,
-                'message' => "Room with id ${id} was not found.",
-            ];
-
-            return $this->response($data, 404);
+            return $this->setStatusCode(404)
+                ->respondWithErrors("Room with id ${id} was not found.");
         }
 
-        $data = [
-            'status' => 200,
-            'room' => $room
-        ];
-
-        return $this->response($data, 200);
+        return $this->respondWithSuccess($room);
     }
 
     /**
@@ -145,12 +169,8 @@ class RoomController extends AbstractController
             $room = $roomRepository->find($id);
 
             if (!$room){
-                $data = [
-                    'status' => 404,
-                    'message' => "Room with id ${id} was not found.",
-                ];
-
-                return $this->response($data, 404);
+                return $this->setStatusCode(404)
+                    ->respondWithErrors("Room with id ${id} was not found.");
             }
 
             $request = $this->transformJsonBody($request);
@@ -162,8 +182,23 @@ class RoomController extends AbstractController
                 || !$request->get('latitude')
                 || !$request->get('squareMeters')
                 || !$request->get('floor')
-                || !$request->get('heating')
                 || !$request->get('description')
+                || !$request->get('roomType')
+                || !$request->get('totalOccupancy')
+                || !$request->get('totalBathrooms')
+                || !$request->get('totalBedrooms')
+                || !$request->get('totalBeds')
+                || !$request->get('hasHeating')
+                || !$request->get('hasAirConditioning')
+                || !$request->get('hasKitchen')
+                || !$request->get('hasLivingRoom')
+                || !$request->get('hasTV')
+                || !$request->get('hasWifi')
+                || !$request->get('hasParking')
+                || !$request->get('hasElevator')
+                || !$request->get('isSmokingInsideAllowed')
+                || !$request->get('arePetsAllowed')
+                || !$request->get('arePartiesAllowed')
             ) {
                 //TODO: Explicit Exception
                 throw new Exception();
@@ -174,23 +209,33 @@ class RoomController extends AbstractController
             $room->setLatitude($request->get('latitude'));
             $room->setSquareMeters($request->get('squareMeters'));
             $room->setFloor($request->get('floor'));
-            $room->setHeating($request->get('heating'));
+            $room->setDescription($request->get('description'));
+            $room->setRoomType($request->get('roomType'));
+            $room->setTotalOccupancy($request->get('totalOccupancy'));
+            $room->setTotalBathrooms($request->get('totalBathrooms'));
+            $room->setTotalBedrooms($request->get('totalBedrooms'));
+            $room->setTotalBeds($request->get('totalBeds'));
+            $room->setHasHeating($request->get('hasHeating'));
+            $room->setHasAirConditioning($request->get('hasAirConditioning'));
+            $room->setHasKitchen($request->get('hasKitchen'));
+            $room->setHasLivingRoom($request->get('hasLivingRoom'));
+            $room->setHasTV($request->get('hasTV'));
+            $room->setHasWifi($request->get('hasWifi'));
+            $room->setHasParking($request->get('hasParking'));
+            $room->setHasElevator($request->get('hasElevator'));
+            $room->setIsSmokingInsideAllowed($request->get('isSmokingInsideAllowed'));
+            $room->setArePetsAllowed($request->get('arePetsAllowed'));
+            $room->setArePartiesAllowed($request->get('arePartiesAllowed'));
+
             $entityManager->flush();
 
-            $data = [
-                'status' => 200,
-                'message' => "Room with id ${id} was updated successfully.",
-            ];
-
-            return $this->response($data, 200);
+            return $this->respondWithSuccess(
+                "Room with id ${id} was updated successfully."
+            );
 
         } catch(Exception $exception){
-            $data = [
-                'status' => 422,
-                'message' => "Data input was not valid.",
-            ];
-
-            return $this->response($data, 422);
+            return $this->setStatusCode(422)
+                ->respondWithErrors("Data input was not valid.");
         }
     }
 
@@ -209,49 +254,13 @@ class RoomController extends AbstractController
         $room = $roomRepository->find($id);
 
         if (!$room){
-            $data = [
-                'status' => 404,
-                'message' => "Room with id ${id} was not found.",
-            ];
-
-            return $this->response($data, 404);
+            return $this->setStatusCode(404)
+                ->respondWithErrors("Room with id ${id} was not found.");
         }
 
         $entityManager->remove($room);
         $entityManager->flush();
 
-        $data = [
-            'status' => 200,
-            'message' => "Room with id ${id} was deleted successfully",
-        ];
-
-        return $this->response($data, 200);
+        return $this->respondWithSuccess("Room with id ${id} was deleted successfully");
     }
-
-    /**
-     * Returns a JSON response
-     *
-     * @param array $data
-     * @param $status
-     * @param array $headers
-     * @return JsonResponse
-     */
-    public function response($data, $status = 200, $headers = [])
-    {
-        return new JsonResponse($data, $status, $headers);
-    }
-
-    protected function transformJsonBody(Request $request)
-    {
-        $data = json_decode($request->getContent(), true);
-
-        if ($data === null) {
-            return $request;
-        }
-
-        $request->request->replace($data);
-
-        return $request;
-    }
-
 }

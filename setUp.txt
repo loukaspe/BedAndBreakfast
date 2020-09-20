@@ -1,0 +1,59 @@
+0. 	sudo apt-get update
+	sudo apt-get-upgrade
+	Install docker-ce and docker-ce-cli
+	reboot
+
+1. 	git clone https://github.com/eko/docker-symfony.git
+
+2. 	git config core.fileMode false
+4.	sudo chmod 777 README.md
+
+4.5. If needed
+	sudo apt-get install composer
+	sudo apt-get install php-ext-xml
+	sudo apt-get install php | grep ext
+	sudo apt-get install php-xml
+
+5.	composer create-project symfony/website-skeleton test
+6.	touch .env
+7.	composer install
+8.	touch .gitignore
+9.	sudo chmod -R 777 ~/Workbench/docker-symfony/
+10.	sudo apt-get install docker-compose 
+11.	docker-compose up
+12.	sudo chmod -R 777 ~/Workbench/docker-symfony/
+13.	sudo gedit /etc/hosts (and add this line '127.0.0.1	symfony.localhost')
+
+13.5. If needed
+	sudo apt-get update
+	sudo apt-get upgrade
+	sudo apt autoremove
+
+14.	curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | sudo apt-key add -
+15.	echo "deb https://dl.yarnpkg.com/debian/ stable main" | sudo tee /etc/apt/sources.list.d/yarn.list
+
+15.5. If needed
+	sudo apt-get update
+
+16.	sudo apt-get install yarn
+17.	yarn install
+
+18. 	composer require 	symfony/flex
+				symfony/webpack-encore-bundle
+				symfony/asset
+				symfony/form
+				twig/twig
+
+19. 	yarn add bootstrap --dev
+20. 	yarn add jquery popper.js --dev
+
+
+
+yarn encore dev (ftiaxnei arxeia public/build/js kai css)
+
+mporei na thelei https://github.com/webpack-contrib/sass-loader/issues/567 (1 .import own scss langage not css langage so app.css should be app.scss
+2. add .addStyleEntry('css/app', './assets/css/app.scss') in webpack.config.js file
+3. be sure node-sass et sass-loader are installed(yarn add -D node-sass sass-loader)) alla sass-loader version 7.0.1 an skaei(allagh apo package.json kai yarn install)
+
+gia allagi apo production se dev: pame .env.local kai allazoyme apo dev se prod kai antistrofa
+thelei meta sudo chmod -R 777 Workbecnh/symfonyApp-master kai make clear-cache

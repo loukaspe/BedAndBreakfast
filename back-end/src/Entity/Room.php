@@ -5,6 +5,8 @@ namespace App\Entity;
 
 use DateTime;
 use DateTimeZone;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Exception;
 use JsonSerializable;
@@ -14,7 +16,7 @@ use JsonSerializable;
  * @ORM\Table(name="room")
  * @ORM\HasLifecycleCallbacks()
  */
-final class Room  implements JsonSerializable
+class Room implements JsonSerializable
 {
     /**
      * @ORM\Column(type="integer")
@@ -41,20 +43,10 @@ final class Room  implements JsonSerializable
     /** @ORM\Column(type="text") */
     private $description;
 
+    /** @ORM\ManyToOne(targetEntity="App\Entity\User", inversedBy="rooms") */
+    private $owner;
 
-    /** @ORM\Column(
-     *     type="string",
-     *     length=100,
-     *     columnDefinition="ENUM(
-     *      'house',
-     *      'appartment',
-     *      'maisonette',
-     *      'guestRoom',
-     *      'hotel,
-     *      'chalet'
-     *     )"
-     * )
-     */
+    /** @ORM\Column(type="string", length=100, columnDefinition="ENUM('house', 'appartment', 'maisonette', 'guestRoom', 'hotel', 'chalet')") */
     private $roomType;
 
     /** @ORM\Column(type="integer") */
@@ -102,14 +94,22 @@ final class Room  implements JsonSerializable
     /** @ORM\Column(type="boolean") */
     private $arePartiesAllowed;
 
-    /** @ORM\Column(type="integer") */
-    private $ownerId;
+    /** @ORM\OneToMany(targetEntity="App\Entity\Reservation", mappedBy="room")  */
+    private $reservations;
 
     /** @ORM\Column(type="datetime") */
     private $createdAt;
 
     /** @ORM\Column(type="datetime") */
     private $updatedAt;
+
+//    /** @ORM\Column(type="datetime") */
+//    private $publishedAt;
+
+    public function __construct()
+    {
+        $this->reservations = new ArrayCollection();
+    }
 
     /** @return mixed */
     public function getRoomType()
@@ -294,9 +294,10 @@ final class Room  implements JsonSerializable
     }
 
     /** @param mixed $arePetsAllowed */
-    public function setArePetsAllowed($arePetsAllowed): void
+    public function setArePetsAllowed($arePetsAllowed): self
     {
         $this->arePetsAllowed = $arePetsAllowed;
+        return $this;
     }
 
     /** @return mixed */
@@ -306,21 +307,10 @@ final class Room  implements JsonSerializable
     }
 
     /** @param mixed $arePartiesAllowed */
-    public function setArePartiesAllowed($arePartiesAllowed): void
+    public function setArePartiesAllowed($arePartiesAllowed): self
     {
         $this->arePartiesAllowed = $arePartiesAllowed;
-    }
-
-    /** @return mixed */
-    public function getOwnerId()
-    {
-        return $this->ownerId;
-    }
-
-    /** @param mixed $ownerId */
-    public function setOwnerId($ownerId): void
-    {
-        $this->ownerId = $ownerId;
+        return $this;
     }
 
     /** @return mixed */
@@ -329,7 +319,7 @@ final class Room  implements JsonSerializable
         return $this->createdAt;
     }
 
-    //TODO: Why return self ??
+
     /** @param mixed $createdAt */
     public function setCreatedAt(DateTime $createdAt): self
     {
@@ -350,20 +340,18 @@ final class Room  implements JsonSerializable
         return $this;
     }
 
-    /** @return mixed */
-    public function getPublishedAt()
-    {
-        return $this->publishedAt;
-    }
-
-    /** @param mixed $publishedAt */
-    public function setPublishedAt($publishedAt): void
-    {
-        $this->publishedAt = $publishedAt;
-    }
-
-    /** @ORM\Column(type="datetime") */
-    private $publishedAt;
+//    /** @return mixed */
+//    public function getPublishedAt()
+//    {
+//        return $this->publishedAt;
+//    }
+//
+//    /** @param mixed $publishedAt */
+//    public function setPublishedAt($publishedAt): self
+//    {
+//        $this->publishedAt = $publishedAt;
+//        return $this;
+//    }
 
     /** @return mixed */
     public function getId()
@@ -372,9 +360,10 @@ final class Room  implements JsonSerializable
     }
 
     /** @param mixed $id */
-    public function setId($id): void
+    public function setId($id): self
     {
         $this->id = $id;
+        return $this;
     }
 
     /** @return mixed */
@@ -384,9 +373,10 @@ final class Room  implements JsonSerializable
     }
 
     /** @param mixed $description */
-    public function setDescription($description): void
+    public function setDescription($description): self
     {
         $this->description = $description;
+        return $this;
     }
 
     /** @return mixed */
@@ -396,9 +386,10 @@ final class Room  implements JsonSerializable
     }
 
     /** @param mixed $pricePerNight */
-    public function setPricePerNight($pricePerNight): void
+    public function setPricePerNight($pricePerNight): self
     {
         $this->pricePerNight = $pricePerNight;
+        return $this;
     }
 
     /** @return mixed */
@@ -455,7 +446,14 @@ final class Room  implements JsonSerializable
      */
     public function beforeSave()
     {
-        $this->createdAt = new DateTime(
+        if (!$this->createdAt) {
+            $this->createdAt = new DateTime(
+                'now',
+                new DateTimeZone('Europe/Athens')
+            );
+        }
+
+        $this->updatedAt = new DateTime(
             'now',
             new DateTimeZone('Europe/Athens')
         );
@@ -471,26 +469,59 @@ final class Room  implements JsonSerializable
             "squareMeters" => $this->getSquareMeters(),
             "floor" => $this->getFloor(),
             "description" => $this->getDescription(),
-            'roomType' => $this->getRoomType(),
-            'totalOccupancy' => $this->getTotalOccupancy(),
-            'totalBathrooms' => $this->getTotalBathrooms(),
-            'totalBedrooms' => $this->getTotalBedrooms(),
-            'totalBeds' => $this->getTotalBeds(),
-            'hasTV' => $this->getHasTV(),
-            'hasKitchen' => $this->getHasKitchen(),
-            'hasLivingRoom' => $this->getHasLivingRoom(),
-            'hasAirConditioning' => $this->getHasAirConditioning(),
-            'hasHeating' => $this->getHasHeating(),
-            'hasWifi' => $this->getHasWifi(),
-            'hasParking' => $this->getHasParking(),
-            'hasElevator' => $this->getHasElevator(),
-            'isSmokingInsideAllowed' => $this->getIsSmokingInsideAllowed(),
-            'arePetsAllowed' => $this->getArePetsAllowed(),
-            'arePartiesAllowed' => $this->getArePartiesAllowed(),
-            'createdAt' => $this->getCreatedAt(),
-            'lastUpdatedAt' => $this->getUpdatedAt(),
-            'publishedAt' => $this->getPublishedAt(),
-            'ownerId' => $this->getOwnerId()
+            "roomType" => $this->getRoomType(),
+            "totalOccupancy" => $this->getTotalOccupancy(),
+            "totalBathrooms" => $this->getTotalBathrooms(),
+            "totalBedrooms" => $this->getTotalBedrooms(),
+            "totalBeds" => $this->getTotalBeds(),
+            "hasTV" => $this->getHasTV(),
+            "hasKitchen" => $this->getHasKitchen(),
+            "hasLivingRoom" => $this->getHasLivingRoom(),
+            "hasAirConditioning" => $this->getHasAirConditioning(),
+            "hasHeating" => $this->getHasHeating(),
+            "hasWifi" => $this->getHasWifi(),
+            "hasParking" => $this->getHasParking(),
+            "hasElevator" => $this->getHasElevator(),
+            "isSmokingInsideAllowed" => $this->getIsSmokingInsideAllowed(),
+            "arePetsAllowed" => $this->getArePetsAllowed(),
+            "arePartiesAllowed" => $this->getArePartiesAllowed(),
+            "createdAt" => $this->getCreatedAt(),
+            "lastUpdatedAt" => $this->getUpdatedAt(),
+//            "publishedAt" => $this->getPublishedAt(),
+//            "owner" => ( isset($this->owner) )
+//                ? $this->getOwner()->jsonSerialize()
+//                : "",
+            "ownerId" => $this->getOwner()->getId(),
+            "reservations" => $this->getReservations(),
         ];
+    }
+
+    public function getOwner(): ?User
+    {
+        return $this->owner;
+    }
+
+    public function setOwner(?User $owner): self
+    {
+        $this->owner = $owner;
+        return $this;
+    }
+
+    public function addReservation(Reservation $reservation): self
+    {
+        if ( !$this->reservations->contains($reservation) ) {
+            $this->reservations[] = $reservation;
+            $reservation->setRoom($this);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Reservation[]
+     */
+    public function getReservations(): Collection
+    {
+        return $this->reservations;
     }
 }

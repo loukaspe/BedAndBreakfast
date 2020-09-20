@@ -1,0 +1,39 @@
+1. New User
+
+{
+    "username": "admin",
+    "password": "admin",
+    "email": "test@test",
+    "firstName": "loukas",
+    "lastName": "pet",
+    "role": "admin",
+    "phone": "6969696969"
+}
+
+2. New Room
+
+{
+    "pricePerNight": 20,
+    "longitude": 1,
+    "latitude": 2,
+    "squareMeters": 100,
+    "floor": "1st",
+    "description": "Poly kalo",
+    "roomType": "maisonette",
+    "totalOccupancy": 2,
+    "totalBathrooms": 1,
+    "totalBedrooms": 1,
+    "totalBeds": 1,
+    "hasTV": true,
+    "hasKitchen": true,
+    "hasLivingRoom": true,
+    "hasAirConditioning": true,
+    "hasHeating": true,
+    "hasWifi": true,
+    "hasParking": true,
+    "hasElevator": true,
+    "isSmokingInsideAllowed": true,
+    "arePetsAllowed": true,
+    "arePartiesAllowed": true,
+    "userId": 1
+}

@@ -1,2 +1,6 @@
 1. Google Maps instead of OpenStreetMap
 2. Room min rent days field omitted for simplicity and time
+
+Beltiwseis:
+1. Sthn Register an yparxei o User na bgazei mhnyma
+2. Sta add poy epistrefei 422 na exoyme kalytera logs (isws me epistrofh kai toy errorMessage)
