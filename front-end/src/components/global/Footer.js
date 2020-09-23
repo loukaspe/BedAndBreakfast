@@ -24,12 +24,12 @@ const Footer = (props) => {
               </p>
             </div>
 
-            <hr class="clearfix w-100 d-md-none pb-3" />
+            <hr className="clearfix w-100 d-md-none pb-3" />
 
-            <div class="col-md-4 mb-md-0 mb-3">
-              <h5 class="text-uppercase">Useful</h5>
+            <div className="col-md-4 mb-md-0 mb-3">
+              <h5 className="text-uppercase">Useful</h5>
 
-              <ul class="list-unstyled">
+              <ul className="list-unstyled">
                 <li>
                   <a href="#!">Link 1</a>
                 </li>

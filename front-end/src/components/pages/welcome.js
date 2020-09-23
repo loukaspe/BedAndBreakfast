@@ -1,6 +1,6 @@
 import React from "react";
 import Layout from "../global/Layout";
-import MainForm from "../mainForm";
+import MainForm from "../forms/mainForm";
 import Background from "../../assets/images/newYork.jpg";
 
 const Welcome = (props) => {

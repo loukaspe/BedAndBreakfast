@@ -1,12 +1,12 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import Register from "../pages/register";
+import LoginForm from "../forms/loginForm";
 
 const Header = (props) => {
   return (
     <div>
       <nav className="navbar navbar-expand-lg navbar-light bg-light">
-        <a className="navbar-brand" href="#">
+        <a className="navbar-brand" href="/">
           AERAS KKP
         </a>
 
@@ -28,26 +28,7 @@ const Header = (props) => {
               </a>
             </li>
           </ul>
-          <form className="form-inline my-2 my-lg-0 mr-5">
-            <input
-              className="form-control mr-sm-2"
-              type="text"
-              placeholder="username"
-              aria-label="username"
-            />
-            <input
-              className="form-control mr-sm-2"
-              type="text"
-              placeholder="password"
-              aria-label="password"
-            />
-            <button
-              className="btn btn-outline-success my-2 my-sm-0"
-              type="submit"
-            >
-              Login
-            </button>
-          </form>
+          <LoginForm />
           <Link to="/register">Register</Link>
         </div>
       </nav>
