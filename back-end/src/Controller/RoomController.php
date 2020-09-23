@@ -51,6 +51,7 @@ class RoomController extends ApiController
         EntityManagerInterface $entityManager,
         roomRepository $roomRepository
     ) {
+
         try{
             $request = $this->transformJsonBody($request);
 
@@ -67,17 +68,17 @@ class RoomController extends ApiController
                 || !$request->get('totalBathrooms')
                 || !$request->get('totalBedrooms')
                 || !$request->get('totalBeds')
-                || !$request->get('hasHeating')
-                || !$request->get('hasAirConditioning')
-                || !$request->get('hasKitchen')
-                || !$request->get('hasLivingRoom')
-                || !$request->get('hasTV')
-                || !$request->get('hasWifi')
-                || !$request->get('hasParking')
-                || !$request->get('hasElevator')
-                || !$request->get('isSmokingInsideAllowed')
-                || !$request->get('arePetsAllowed')
-                || !$request->get('arePartiesAllowed')
+                || $request->get('hasHeating') === null
+                || $request->get('hasAirConditioning') === null
+                || $request->get('hasKitchen') === null
+                || $request->get('hasLivingRoom') === null
+                || $request->get('hasTV') === null
+                || $request->get('hasWifi') === null
+                || $request->get('hasParking') === null
+                || $request->get('hasElevator') === null
+                || $request->get('isSmokingInsideAllowed') === null
+                || $request->get('arePetsAllowed') === null
+                || $request->get('arePartiesAllowed') === null
                 || !$request->get('userId')
             ) {
                 //TODO: Explicit Exception
@@ -188,17 +189,17 @@ class RoomController extends ApiController
                 || !$request->get('totalBathrooms')
                 || !$request->get('totalBedrooms')
                 || !$request->get('totalBeds')
-                || !$request->get('hasHeating')
-                || !$request->get('hasAirConditioning')
-                || !$request->get('hasKitchen')
-                || !$request->get('hasLivingRoom')
-                || !$request->get('hasTV')
-                || !$request->get('hasWifi')
-                || !$request->get('hasParking')
-                || !$request->get('hasElevator')
-                || !$request->get('isSmokingInsideAllowed')
-                || !$request->get('arePetsAllowed')
-                || !$request->get('arePartiesAllowed')
+                || $request->get('hasHeating') === null
+                || $request->get('hasAirConditioning') === null
+                || $request->get('hasKitchen') === null
+                || $request->get('hasLivingRoom') === null
+                || $request->get('hasTV') === null
+                || $request->get('hasWifi') === null
+                || $request->get('hasParking') === null
+                || $request->get('hasElevator') === null
+                || $request->get('isSmokingInsideAllowed') === null
+                || $request->get('arePetsAllowed') === null
+                || $request->get('arePartiesAllowed') === null
             ) {
                 //TODO: Explicit Exception
                 throw new Exception();
