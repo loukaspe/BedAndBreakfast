@@ -31,6 +31,12 @@ class Room implements JsonSerializable
     /** @ORM\Column(type="integer") */
     private $squareMeters;
 
+    /** @ORM\Column(type="string") */
+    private $area;
+
+    /** @ORM\Column(type="string") */
+    private $locality;
+
     /** @ORM\Column(type="string", length=100) */
     private $floor;
 
@@ -435,6 +441,8 @@ class Room implements JsonSerializable
             "id" => $this->getId(),
             "pricePerNight" => $this->getPricePerNight(),
             "squareMeters" => $this->getSquareMeters(),
+            "locality" => $this->getLocality(),
+            "area" => $this->getArea,
             "floor" => $this->getFloor(),
             "description" => $this->getDescription(),
             "roomType" => $this->getRoomType(),
@@ -487,5 +495,27 @@ class Room implements JsonSerializable
     public function getReservations(): Collection
     {
         return $this->reservations;
+    }
+
+    public function getLocality(): string
+    {
+        return $this->locality;
+    }
+
+    public function setLocality(string $locality): self
+    {
+        $this->locality = $locality;
+        return $this;
+    }
+
+    public function getArea(): string
+    {
+        return $this->area;
+    }
+
+    public function setArea(string $area): self
+    {
+        $this->area = $area;
+        return $this;
     }
 }
