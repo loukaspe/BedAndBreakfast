@@ -29,12 +29,6 @@ class Room implements JsonSerializable
     private $pricePerNight;
 
     /** @ORM\Column(type="integer") */
-    private $longitude;
-
-    /** @ORM\Column(type="integer") */
-    private $latitude;
-
-    /** @ORM\Column(type="integer") */
     private $squareMeters;
 
     /** @ORM\Column(type="string", length=100) */
@@ -393,30 +387,6 @@ class Room implements JsonSerializable
     }
 
     /** @return mixed */
-    public function getLongitude()
-    {
-        return $this->longitude;
-    }
-
-    /** @param mixed $longitude */
-    public function setLongitude($longitude): void
-    {
-        $this->longitude = $longitude;
-    }
-
-    /** @return mixed */
-    public function getLatitude()
-    {
-        return $this->latitude;
-    }
-
-    /** @param mixed $latitude */
-    public function setLatitude($latitude): void
-    {
-        $this->latitude = $latitude;
-    }
-
-    /** @return mixed */
     public function getSquareMeters()
     {
         return $this->squareMeters;
@@ -464,8 +434,6 @@ class Room implements JsonSerializable
         return [
             "id" => $this->getId(),
             "pricePerNight" => $this->getPricePerNight(),
-            "longitude" => $this->getLongitude(),
-            "latitude" => $this->getLatitude(),
             "squareMeters" => $this->getSquareMeters(),
             "floor" => $this->getFloor(),
             "description" => $this->getDescription(),
@@ -487,10 +455,6 @@ class Room implements JsonSerializable
             "arePartiesAllowed" => $this->getArePartiesAllowed(),
             "createdAt" => $this->getCreatedAt(),
             "lastUpdatedAt" => $this->getUpdatedAt(),
-//            "publishedAt" => $this->getPublishedAt(),
-//            "owner" => ( isset($this->owner) )
-//                ? $this->getOwner()->jsonSerialize()
-//                : "",
             "ownerId" => $this->getOwner()->getId(),
             "reservations" => $this->getReservations(),
         ];

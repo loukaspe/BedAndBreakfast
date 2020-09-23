@@ -57,8 +57,6 @@ class RoomController extends ApiController
             if (
                 !$request
                 || !$request->get('pricePerNight')
-                || !$request->get('longitude')
-                || !$request->get('latitude')
                 || !$request->get('squareMeters')
                 || !$request->get('floor')
                 || !$request->get('description')
@@ -96,8 +94,6 @@ class RoomController extends ApiController
 
             $room = new Room();
             $room->setPricePerNight($request->get('pricePerNight'));
-            $room->setLongitude($request->get('longitude'));
-            $room->setLatitude($request->get('latitude'));
             $room->setSquareMeters($request->get('squareMeters'));
             $room->setFloor($request->get('floor'));
             $room->setDescription($request->get('description'));
@@ -178,8 +174,6 @@ class RoomController extends ApiController
             if (
                 !$request
                 || !$request->get('pricePerNight')
-                || !$request->get('longitude')
-                || !$request->get('latitude')
                 || !$request->get('squareMeters')
                 || !$request->get('floor')
                 || !$request->get('description')
@@ -205,8 +199,6 @@ class RoomController extends ApiController
             }
 
             $room->setPricePerNight($request->get('pricePerNight'));
-            $room->setLongitude($request->get('longitude'));
-            $room->setLatitude($request->get('latitude'));
             $room->setSquareMeters($request->get('squareMeters'));
             $room->setFloor($request->get('floor'));
             $room->setDescription($request->get('description'));
