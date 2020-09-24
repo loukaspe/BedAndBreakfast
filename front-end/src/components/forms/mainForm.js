@@ -1,8 +1,7 @@
 import React, { Component } from "react";
-import axios from "axios";
-import { API_BASE_URL, API_ROOMS_ROUTE } from "../../constants/apiConstants";
+import RoomService from "../../services/room/roomService";
 import { formValidator } from "../../services/validation/formValidator";
-import SearchLocationLocalityInput from "../inputs/SearchLocationAddressInput";
+import SearchLocationCityInput from "../inputs/SearchLocationCityInput";
 
 class MainForm extends Component {
   constructor(props) {
@@ -12,14 +11,11 @@ class MainForm extends Component {
     let dateString = currentDate.toISOString().substr(0, 10);
 
     this.state = {
-      country: "",
-      city: "",
+      locality: "",
       area: "",
       startDate: dateString,
       endDate: dateString,
 
-      countryError: "",
-      cityError: "",
       areaError: "",
       startDateError: "",
       endDateError: "",
@@ -32,14 +28,13 @@ class MainForm extends Component {
 
   callApi = () => {
     const data = {
-      country: this.state.country,
-      city: this.state.city,
+      locality: this.state.locality,
       area: this.state.area,
       startDate: this.state.startDate,
       endDate: this.state.endDate,
     };
-    axios
-      .post(API_BASE_URL + API_ROOMS_ROUTE, data)
+
+    RoomService.searchRoomWithDataFromMainForm(data)
       .then(function (response) {
         console.log(response.data);
       })
@@ -52,50 +47,56 @@ class MainForm extends Component {
     let isFormValid = true;
 
     this.setState({
-      countryError: "",
-      cityError: "",
       areaError: "",
       startDateError: "",
       endDateError: "",
     });
 
     let hasValidationReturnedError = formValidator.validateNotEmptyField(
-      this.state.country
+      this.state.area
     );
     if (hasValidationReturnedError) {
-      this.setState({ countryError: hasValidationReturnedError });
+      this.setState({ areaError: hasValidationReturnedError });
       isFormValid = false;
     }
 
     hasValidationReturnedError = formValidator.validateNotEmptyField(
-      this.state.city
+      this.state.locality
     );
     if (hasValidationReturnedError) {
-      this.setState({ cityError: hasValidationReturnedError });
+      this.setState({ areaError: hasValidationReturnedError });
       isFormValid = false;
     }
 
-    hasValidationReturnedError = formValidator.validateNotEmptyField(
-      this.state.city
+    hasValidationReturnedError = formValidator.validateDate(
+      this.state.startDate
     );
     if (hasValidationReturnedError) {
-      this.setState({ cityError: hasValidationReturnedError });
+      this.setState({ startDateError: hasValidationReturnedError });
+      isFormValid = false;
+    }
+
+    hasValidationReturnedError = formValidator.validateDate(this.state.endDate);
+    if (hasValidationReturnedError) {
+      this.setState({ endDateError: hasValidationReturnedError });
       isFormValid = false;
     }
 
     return isFormValid;
   };
 
+  setAreaAndLocalityFromGoogleAutocomplete = (area, locality) => {
+    this.setState({
+      area: area,
+      locality: locality,
+    });
+  };
+
   handleSubmit = async (event) => {
     event.preventDefault();
-    console.log("EGINE SUBMIT");
-    //TODO: call
-
-    // const resp = await axios.get(
-    //   `https://api.github.com/users/${this.state.companyName}`
-    // );
-    // this.props.onSubmit(resp.data);
-    // this.setState({ companyName: "" });
+    if (this.validateFields()) {
+      this.callApi();
+    }
   };
 
   render() {
@@ -105,56 +106,14 @@ class MainForm extends Component {
         className={"bg-light pl-3 pr-3 pt-1 pb-1 mt-3 mb-3"}
       >
         <div className="form-group">
-          <label htmlFor="pricePerNight">Address:</label>
-          <SearchLocationLocalityInput onChange={() => null} />
+          <label>Area:</label>
+          <SearchLocationCityInput
+            onChange={this.setAreaAndLocalityFromGoogleAutocomplete}
+          />
           <small className="form-text text-muted">
-            Please set the address of the room:
+            Choose your dream destination:
           </small>
-        </div>
-
-        <div className="form-group">
-          <label htmlFor="country">Country:</label>
-          <input
-            type="text"
-            onChange={(event) => this.setState({ country: event.target.value })}
-            className="form-control"
-            id="country"
-            aria-describedby="countryHelp"
-            value={this.state.country}
-          />
-          <small id="countryHelp" className="form-text text-muted">
-            Please select your country from the list
-          </small>
-        </div>
-
-        <div className="form-group">
-          <label htmlFor="city">City:</label>
-          <input
-            type="text"
-            onChange={(event) => this.setState({ city: event.target.value })}
-            className="form-control"
-            id="city"
-            aria-describedby="cityHelp"
-            value={this.state.city}
-          />
-          <small id="cityHelp" className="form-text text-muted">
-            Please select your city from the list
-          </small>
-        </div>
-
-        <div className="form-group">
-          <label htmlFor="area">Area:</label>
-          <input
-            type="text"
-            onChange={(event) => this.setState({ area: event.target.value })}
-            className="form-control"
-            id="area"
-            aria-describedby="areaHelp"
-            value={this.state.area}
-          />
-          <small id="areaHelp" className="form-text text-muted">
-            Please select your area from the list
-          </small>
+          <span style={{ color: "red" }}>{this.state.areaError}</span>
         </div>
 
         <div className="form-group">

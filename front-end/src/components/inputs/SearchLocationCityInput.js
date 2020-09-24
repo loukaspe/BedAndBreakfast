@@ -22,31 +22,42 @@ const loadScript = (url, callback) => {
   document.getElementsByTagName("head")[0].appendChild(script);
 };
 
-function handleScriptLoad(updateQuery, autoCompleteRef) {
+function handleScriptLoad(
+  updateQuery,
+  autoCompleteRef,
+  setAreaAndLocalityFromGoogleAutocomplete
+) {
   autoComplete = new window.google.maps.places.Autocomplete(
     autoCompleteRef.current,
     { types: ["(cities)"] }
   );
   autoComplete.setFields(["address_components", "formatted_address"]);
   autoComplete.addListener("place_changed", () =>
-    handlePlaceSelect(updateQuery)
+    handlePlaceSelect(updateQuery, setAreaAndLocalityFromGoogleAutocomplete)
   );
 }
 
-async function handlePlaceSelect(updateQuery) {
-  const addressObject = autoComplete.getPlace();
-  const query = addressObject.formatted_address;
+async function handlePlaceSelect(
+  updateQuery,
+  setAreaAndLocalityFromGoogleAutocomplete
+) {
+  const cityObject = autoComplete.getPlace();
+  const query = cityObject.formatted_address;
   updateQuery(query);
+  setAreaAndLocalityFromGoogleAutocomplete(
+    cityObject.address_components[0].long_name,
+    cityObject.address_components[1].long_name
+  );
 }
 
-function SearchLocationCityInput() {
+function SearchLocationCityInput(props) {
   const [query, setQuery] = useState("");
   const autoCompleteRef = useRef(null);
 
   useEffect(() => {
     loadScript(
       `https://maps.googleapis.com/maps/api/js?key=${process.env.REACT_APP_GOOGLE_API_KEY}&libraries=places`,
-      () => handleScriptLoad(setQuery, autoCompleteRef)
+      () => handleScriptLoad(setQuery, autoCompleteRef, props.onChange)
     );
   }, []);
 
