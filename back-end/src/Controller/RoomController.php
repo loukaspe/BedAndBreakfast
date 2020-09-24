@@ -7,6 +7,9 @@ namespace App\Controller;
 use App\Entity\Room;
 use App\Entity\User;
 use App\Repository\RoomRepository;
+use App\Service\Room\AvailabilityValidator;
+use DateTime;
+use DateTimeZone;
 use Doctrine\ORM\EntityManagerInterface;
 use Exception;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -19,6 +22,7 @@ use Symfony\Component\Routing\Annotation\Route;
  */
 class RoomController extends ApiController
 {
+    const ATHENS_TIMEZONE = 'Europe/Athens';
     /**
      * @param RoomRepository $roomRepository
      * @return JsonResponse
@@ -150,6 +154,82 @@ class RoomController extends ApiController
         }
 
         return $this->respondWithSuccess($room);
+    }
+
+    /**
+     * @param Request $request
+     * @param RoomRepository $roomRepository
+     * @param AvailabilityValidator $availabilityValidator
+     * @return JsonResponse
+     * @throws Exception
+     * @Route("/searchRooms", name="roomsGetByArea", methods={"POST"})
+     */
+    public function searchForRoom(
+        Request $request,
+        RoomRepository $roomRepository,
+        AvailabilityValidator $availabilityValidator
+    ) {
+        $request = $this->transformJsonBody($request);
+
+        if (
+            !$request
+            || !$request->get('startDate')
+            || !$request->get('endDate')
+            || !$request->get('locality')
+            || !$request->get('area')
+        ) {
+            return $this
+                ->setStatusCode(422)
+                ->respondWithErrors(
+                    "Invalid Data Input."
+                );
+        }
+
+        $startDate = $request->get('startDate');
+        $endDate = $request->get('endDate');
+        $locality = $request->get('locality');
+        $area = $request->get('area');
+
+        /** @var array $rooms */
+        $rooms = $roomRepository->findByLocalityAndArea($locality, $area);
+
+        try {
+            $startDateObject = new DateTime(
+                $startDate,
+                new DateTimeZone(self::ATHENS_TIMEZONE)
+            );
+
+            $endDateObject = new DateTime(
+                $endDate,
+                new DateTimeZone(self::ATHENS_TIMEZONE)
+            );
+        } catch (Exception $exception) {
+            return $this->setStatusCode(500)
+                ->respondWithErrors(
+                    "Technical Issue."
+                );
+        }
+
+        if (!$rooms){
+            return $this->setStatusCode(404)
+                ->respondWithErrors(
+                    "No Room was found in area ${locality}, ${area}."
+                );
+        }
+
+        foreach ($rooms as $room) {
+            if(
+                ! $availabilityValidator->isRoomAvailable(
+                    $room,
+                    $startDateObject,
+                    $endDateObject
+                )
+            ) {
+                unset($room);
+            }
+        }
+
+        return $this->respondWithSuccess($rooms);
     }
 
     /**
