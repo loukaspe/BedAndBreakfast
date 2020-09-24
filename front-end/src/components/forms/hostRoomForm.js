@@ -19,6 +19,7 @@ class HostRoomForm extends Component {
       pricePerNight: 0,
       locality: "",
       area: "",
+      address: "",
       squareMeters: 0,
       floor: "",
       description: "",
@@ -65,7 +66,7 @@ class HostRoomForm extends Component {
     this.handleSubmit = this.handleSubmit.bind(this);
     this.callApi = this.callApi.bind(this);
     this.validateFields = this.validateFields.bind(this);
-    this.setAreaAndLocalityFromGoogleAutocomplete = this.setAreaAndLocalityFromGoogleAutocomplete.bind(
+    this.setDataFromGoogleAutocomplete = this.setDataFromGoogleAutocomplete.bind(
       this
     );
   }
@@ -75,6 +76,7 @@ class HostRoomForm extends Component {
       pricePerNight: this.state.pricePerNight,
       locality: this.state.locality,
       area: this.state.area,
+      address: this.state.address,
       squareMeters: this.state.squareMeters,
       floor: this.state.floor,
       description: this.state.description,
@@ -156,6 +158,14 @@ class HostRoomForm extends Component {
       isFormValid = false;
     }
 
+    hasValidationReturnedError = formValidator.validateNotEmptyField(
+      this.state.address
+    );
+    if (hasValidationReturnedError) {
+      this.setState({ addressError: hasValidationReturnedError });
+      isFormValid = false;
+    }
+
     hasValidationReturnedError = formValidator.validateNumberNotZero(
       this.state.squareMeters
     );
@@ -223,10 +233,11 @@ class HostRoomForm extends Component {
     return isFormValid;
   };
 
-  setAreaAndLocalityFromGoogleAutocomplete = (area, locality) => {
+  setDataFromGoogleAutocomplete = (area, locality, address) => {
     this.setState({
       area: area,
       locality: locality,
+      address: address,
     });
   };
 
@@ -264,7 +275,7 @@ class HostRoomForm extends Component {
         <div className="form-group">
           <label>Address:</label>
           <SearchLocationAddressInput
-            onChange={this.setAreaAndLocalityFromGoogleAutocomplete}
+            onChange={this.setDataFromGoogleAutocomplete}
           />
           <small className="form-text text-muted">
             Please set the address of the room:

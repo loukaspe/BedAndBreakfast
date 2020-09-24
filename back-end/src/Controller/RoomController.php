@@ -23,6 +23,7 @@ use Symfony\Component\Routing\Annotation\Route;
 class RoomController extends ApiController
 {
     const ATHENS_TIMEZONE = 'Europe/Athens';
+
     /**
      * @param RoomRepository $roomRepository
      * @return JsonResponse
@@ -66,6 +67,7 @@ class RoomController extends ApiController
                 || !$request->get('floor')
                 || !$request->get('locality')
                 || !$request->get('area')
+                || !$request->get('address')
                 || !$request->get('description')
                 || !$request->get('roomType')
                 || !$request->get('totalOccupancy')
@@ -104,6 +106,7 @@ class RoomController extends ApiController
             $room->setSquareMeters($request->get('squareMeters'));
             $room->setLocality($request->get('locality'));
             $room->setArea($request->get('area'));
+            $room->setAddress($request->get('address'));
             $room->setFloor($request->get('floor'));
             $room->setDescription($request->get('description'));
             $room->setRoomType($request->get('roomType'));
@@ -263,6 +266,7 @@ class RoomController extends ApiController
                 || !$request->get('floor')
                 || !$request->get('locality')
                 || !$request->get('area')
+                || !$request->get('address')
                 || !$request->get('description')
                 || !$request->get('roomType')
                 || !$request->get('totalOccupancy')
@@ -290,6 +294,7 @@ class RoomController extends ApiController
             $room->setFloor($request->get('floor'));
             $room->setLocality($request->get('locality'));
             $room->setArea($request->get('area'));
+            $room->setAddress($request->get('address'));
             $room->setDescription($request->get('description'));
             $room->setRoomType($request->get('roomType'));
             $room->setTotalOccupancy($request->get('totalOccupancy'));

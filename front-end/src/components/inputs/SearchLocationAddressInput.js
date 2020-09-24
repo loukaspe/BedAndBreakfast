@@ -25,7 +25,7 @@ const loadScript = (url, callback) => {
 function handleScriptLoad(
   updateQuery,
   autoCompleteRef,
-  setAreaAndLocalityFromGoogleAutocomplete
+  setDataFromGoogleAutocomplete
 ) {
   autoComplete = new window.google.maps.places.Autocomplete(
     autoCompleteRef.current,
@@ -33,20 +33,18 @@ function handleScriptLoad(
   );
   autoComplete.setFields(["address_components", "formatted_address"]);
   autoComplete.addListener("place_changed", () =>
-    handlePlaceSelect(updateQuery, setAreaAndLocalityFromGoogleAutocomplete)
+    handlePlaceSelect(updateQuery, setDataFromGoogleAutocomplete)
   );
 }
 
-async function handlePlaceSelect(
-  updateQuery,
-  setAreaAndLocalityFromGoogleAutocomplete
-) {
+async function handlePlaceSelect(updateQuery, setDataFromGoogleAutocomplete) {
   const addressObject = autoComplete.getPlace();
   const query = addressObject.formatted_address;
   updateQuery(query);
-  setAreaAndLocalityFromGoogleAutocomplete(
+  setDataFromGoogleAutocomplete(
     addressObject.address_components[2].long_name,
-    addressObject.address_components[3].long_name
+    addressObject.address_components[3].long_name,
+    query
   );
 }
 
