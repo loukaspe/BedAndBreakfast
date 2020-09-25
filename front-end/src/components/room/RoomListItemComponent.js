@@ -69,7 +69,7 @@ class RoomListItemComponent extends Component {
     RoomService.makeReservation(data)
       .then(function (response) {
         history.push({
-          pathname: "/successReservation",
+          pathname: "/reservationSuccess",
         });
       })
       .catch(function (error) {
