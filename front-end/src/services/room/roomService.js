@@ -3,6 +3,7 @@ import {
   API_BASE_URL,
   API_ROOMS_ROUTE,
   API_SEARCH_ROOMS_ROUTE,
+  API_RESERVATIONS_ROUTE,
 } from "../../constants/apiConstants";
 import Authenticator from "../user/authenticator";
 
@@ -16,6 +17,12 @@ class RoomService {
 
   searchRoomWithDataFromMainForm(data) {
     return axios.post(API_BASE_URL + API_SEARCH_ROOMS_ROUTE, data, {
+      headers: Authenticator.getCurrentUserToken(),
+    });
+  }
+
+  makeReservation(data) {
+    return axios.post(API_BASE_URL + API_RESERVATIONS_ROUTE, data, {
       headers: Authenticator.getCurrentUserToken(),
     });
   }

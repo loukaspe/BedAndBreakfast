@@ -1,6 +1,9 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
 import RandomRoomImage from "./RandomRoomImage";
+import Authenticator from "../../services/user/authenticator";
+import RoomService from "../../services/room/roomService";
+import { withRouter } from "react-router-dom";
 
 class RoomComponent extends Component {
   constructor(props, context) {
@@ -46,7 +49,6 @@ class RoomComponent extends Component {
   };
 
   handleScriptLoad = () => {
-    console.log("MPHKEFAAFEAFW");
     let skata = document.getElementById("map");
     console.log(skata);
     const uluru = { lat: -25.363, lng: 131.044 };
@@ -55,19 +57,48 @@ class RoomComponent extends Component {
     });
   };
 
+  handleClickReserve = () => {
+    let totalDays =
+      this.props.endDate.getDate() - this.props.startDate.getDate();
+
+    let totalPrice = this.props.pricePerNight * totalDays;
+    this.state = { totalDays: totalDays, totalPrice: totalPrice };
+
+    const data = {
+      startDate: this.props.startDate,
+      endDate: this.props.endDate,
+      price: this.props.pricePerNight,
+      total: totalPrice,
+      userId: Authenticator.getCurrentUserId(),
+      roomId: this.props.id,
+    };
+
+    let history = this.props.history;
+
+    RoomService.makeReservation(data)
+      .then(function (response) {
+        history.push({
+          pathname: "/successReservation",
+        });
+      })
+      .catch(function (error) {
+        console.log(error);
+      });
+  };
+
   render() {
     return (
-      <div>
-        <div className={"h2 font-weight-bold row"}>
+      <div className={"bg-light pl-3 pr-3 pt-1 pb-1 mt-3 mb-3"}>
+        <div className={"h2 font-weight-bold row p-1"}>
           {this.props.roomType} in {this.props.area}
         </div>
-        <div className="row">
+        <div className="row p-1">
           <div className="col-md-7">
             <RandomRoomImage />
           </div>
           <div className="col-md-5">
-            <div className="row">{this.props.pricePerNight}€ /night</div>
-            <div className="row">
+            <div className="row p-1">{this.props.pricePerNight}€ /night</div>
+            <div className="row p-1">
               <button
                 type="button"
                 className="btn btn-primary"
@@ -76,73 +107,77 @@ class RoomComponent extends Component {
                 Reserve
               </button>
             </div>
-            <div className="row">
+            <div className="row p-1">
               From {this.props.startDate.toISOString().substr(0, 10)}
             </div>
-            <div className="row">
+            <div className="row p-1">
               To {this.props.endDate.toISOString().substr(0, 10)}
             </div>
-            <div className="row">Total: {this.state.totalPrice}€</div>
+            <div className="row p-1">Total: {this.state.totalPrice}€</div>
           </div>
         </div>
-        <div className="row">{this.props.description}</div>
-        <div className="row">
+        <div className="row p-1">{this.props.description}</div>
+        <div className="row p-1">
           <div className="col-md-7">
-            <div className="h4 font-weight-bold row">Room Arrangements</div>
-            <div className="h5 row">
+            <div className="h4 font-weight-bold row p-1">Room Arrangements</div>
+            <div className="h5 row p-1">
               <div className="col">
                 {this.props.hasKitchen ? (
-                  <div className="row">Kitchen</div>
+                  <div className="row p-1">Kitchen</div>
                 ) : (
                   ""
                 )}
                 {this.props.hasLivingRoom ? (
-                  <div className="row">Living Room</div>
+                  <div className="row p-1">Living Room</div>
                 ) : (
                   ""
                 )}
-                <div className="row">{this.props.totalBathrooms} Bathrooms</div>
-                <div className="row">{this.props.totalBedrooms} Bedrooms</div>
-                <div className="row">{this.props.totalBeds} Beds</div>
+                <div className="row p-1">
+                  {this.props.totalBathrooms} Bathrooms
+                </div>
+                <div className="row p-1">
+                  {this.props.totalBedrooms} Bedrooms
+                </div>
+                <div className="row p-1">{this.props.totalBeds} Beds</div>
               </div>
             </div>
-            <div className="h4 font-weight-bold row">Amenities</div>
-            <div className="h5 row">
+            <div className="h4 font-weight-bold row p-1">Amenities</div>
+            <div className="h5 row p-1">
               <div className="col">
-                {this.props.hasTV ? '<div className="row">TV</div>' : ""}
+                {this.props.hasTV ? <div className="row p-1">TV</div> : ""}
                 {this.props.hasAirConditioning ? (
-                  <div className="row">Air Conditioning</div>
+                  <div className="row p-1">Air Conditioning</div>
                 ) : (
                   ""
                 )}
                 {this.props.hasHeating ? (
-                  <div className="row">Heating</div>
+                  <div className="row p-1">Heating</div>
                 ) : (
                   ""
                 )}
-                {this.props.hasWifi ? <div className="row">WiFi</div> : ""}
+                {this.props.hasWifi ? <div className="row p-1">WiFi</div> : ""}
                 {this.props.hasParking ? (
-                  <div className="row">Parking</div>
+                  <div className="row p-1">Parking</div>
                 ) : (
                   ""
                 )}
                 {this.props.hasElevator ? (
-                  <div className="row">Elevator</div>
+                  <div className="row p-1">Elevator</div>
                 ) : (
                   ""
                 )}
                 {this.props.isSmokingInsideAllowed ? (
-                  <div className="row">Smoking Inside Allowed</div>
+                  <div className="row p-1">Smoking Inside Allowed</div>
                 ) : (
                   ""
                 )}
                 {this.props.arePetsAllowed ? (
-                  <div className="row">Pets Allowed</div>
+                  <div className="row p-1">Pets Allowed</div>
                 ) : (
                   ""
                 )}
                 {this.props.arePartiesAllowed ? (
-                  <div className="row">Parties Allowed</div>
+                  <div className="row p-1">Parties Allowed</div>
                 ) : (
                   ""
                 )}{" "}
@@ -159,6 +194,7 @@ class RoomComponent extends Component {
 }
 
 RoomComponent.propTypes = {
+  id: PropTypes.number,
   pricePerNight: PropTypes.number,
   squareMeters: PropTypes.number,
   totalOccupancy: PropTypes.number,
@@ -186,4 +222,4 @@ RoomComponent.propTypes = {
   endDate: PropTypes.instanceOf(Date),
 };
 
-export default RoomComponent;
+export default withRouter(RoomComponent);

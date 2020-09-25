@@ -2,17 +2,17 @@ import React, { Component } from "react";
 import PropTypes from "prop-types";
 import RandomRoomImage from "./RandomRoomImage";
 import { withRouter } from "react-router-dom";
+import RoomService from "../../services/room/roomService";
+import Authenticator from "../../services/user/authenticator";
 
 class RoomListItemComponent extends Component {
   constructor(props, context) {
     super(props, context);
-
-    // this.handleClickCheck = this.handleClickCheck.bind(this);
-    // this.handleClickReserve = this.handleClickReserve.bind(this);
   }
 
   handleClickCheck = () => {
     let room = {
+      id: this.props.id,
       pricePerNight: this.props.pricePerNight,
       squareMeters: this.props.squareMeters,
       totalOccupancy: this.props.totalOccupancy,
@@ -49,12 +49,32 @@ class RoomListItemComponent extends Component {
   };
 
   handleClickReserve = () => {
-    console.log("Handle Reserve");
-    // if (window.confirm("Are you sure you want to reserve this room?")) {
-    //   console.log("YES");
-    // } else {
-    //   console.log("NO");
-    // }
+    let totalDays =
+      this.props.endDate.getDate() - this.props.startDate.getDate();
+
+    let totalPrice = this.props.pricePerNight * totalDays;
+    this.state = { totalDays: totalDays, totalPrice: totalPrice };
+
+    const data = {
+      startDate: this.props.startDate,
+      endDate: this.props.endDate,
+      price: this.props.pricePerNight,
+      total: totalPrice,
+      userId: Authenticator.getCurrentUserId(),
+      roomId: this.props.id,
+    };
+
+    let history = this.props.history;
+
+    RoomService.makeReservation(data)
+      .then(function (response) {
+        history.push({
+          pathname: "/successReservation",
+        });
+      })
+      .catch(function (error) {
+        console.log(error);
+      });
   };
 
   render() {
@@ -111,6 +131,7 @@ class RoomListItemComponent extends Component {
 }
 
 RoomListItemComponent.propTypes = {
+  id: PropTypes.number,
   pricePerNight: PropTypes.number,
   squareMeters: PropTypes.number,
   totalOccupancy: PropTypes.number,

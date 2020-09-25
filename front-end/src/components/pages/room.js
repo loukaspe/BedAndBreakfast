@@ -8,8 +8,12 @@ const Room = (props) => {
     <>
       <Layout
         children={
-          <div className={"row justify-content-center"}>
+          <div
+            className={"row justify-content-center"}
+            style={{ backgroundImage: `url(${Background})` }}
+          >
             <RoomComponent
+              id={props.location.state.room.id}
               pricePerNight={props.location.state.room.pricePerNight}
               squareMeters={props.location.state.room.squareMeters}
               totalOccupancy={props.location.state.room.totalOccupancy}

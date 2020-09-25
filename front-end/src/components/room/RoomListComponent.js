@@ -9,6 +9,7 @@ class RoomListComponent extends Component {
         {this.props.rooms.map((room) => {
           return (
             <RoomListItemComponent
+              id={room.id}
               pricePerNight={room.pricePerNight}
               squareMeters={room.squareMeters}
               totalOccupancy={room.totalOccupancy}
