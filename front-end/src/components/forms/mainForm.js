@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import RoomService from "../../services/room/roomService";
 import { formValidator } from "../../services/validation/formValidator";
 import SearchLocationCityInput from "../inputs/SearchLocationCityInput";
+import { withRouter } from "react-router-dom";
 
 class MainForm extends Component {
   constructor(props) {
@@ -34,9 +35,20 @@ class MainForm extends Component {
       endDate: this.state.endDate,
     };
 
+    let history = this.props.history;
+
     RoomService.searchRoomWithDataFromMainForm(data)
       .then(function (response) {
-        console.log(response.data);
+        let startDateObject = new Date(data.startDate);
+        let endDateObject = new Date(data.endDate);
+        history.push({
+          pathname: "/results",
+          state: {
+            rooms: response.data.success,
+            startDate: startDateObject,
+            endDate: endDateObject,
+          },
+        });
       })
       .catch(function (error) {
         console.log(error);
@@ -155,4 +167,4 @@ class MainForm extends Component {
   }
 }
 
-export default MainForm;
+export default withRouter(MainForm);
