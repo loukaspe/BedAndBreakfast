@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import Authenticator from "../../services/user/authenticator";
 import { formValidator } from "../../services/validation/formValidator";
+import { withRouter } from "react-router-dom";
 
 class LoginForm extends Component {
   constructor(props) {
@@ -26,28 +27,14 @@ class LoginForm extends Component {
       password: this.state.password,
     };
 
-    Authenticator.login(data).then(
-      () => {
-        //TODO: After login action
-      },
-      (error) => {
-        const resMessage =
-          (error.response &&
-            error.response.data &&
-            error.response.data.message) ||
-          error.message ||
-          error.toString();
+    Authenticator.login(data).catch(function (error) {
+      console.log(error);
+      this.setState({
+        loginError: "Invalid Credentials",
+      });
+    });
 
-        this.setState({
-          loginError: "Invalid Credentials",
-        });
-      }
-    );
-
-    // Authenticator.login(data).catch(function (error) {
-    //   console.log(error);
-    //   this.setState({ loginError: "Invalid Credentials" });
-    // });
+    this.props.history.push("/");
   };
 
   validateFields = () => {
@@ -115,4 +102,4 @@ class LoginForm extends Component {
   }
 }
 
-export default LoginForm;
+export default withRouter(LoginForm);

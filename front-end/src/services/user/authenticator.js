@@ -66,6 +66,10 @@ class Authenticator {
       return "";
     }
   }
+
+  isLoggedIn() {
+    return !!localStorage.getItem("user");
+  }
 }
 
 export default new Authenticator();
