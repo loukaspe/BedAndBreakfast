@@ -6,6 +6,7 @@ import {
   HOST_ROLE,
 } from "../../constants/enumsConstants";
 import { formValidator } from "../../services/validation/formValidator";
+import {withRouter} from "react-router-dom";
 
 class RegisterForm extends Component {
   constructor(props) {
@@ -46,7 +47,17 @@ class RegisterForm extends Component {
       email: this.state.email,
       password: this.state.password,
     };
-    Authenticator.register(data);
+    let history = this.props.history;
+
+    Authenticator.register(data).then(function (response) {
+      history.push({
+        pathname: '/registrationSuccess',
+      });
+    })
+    .catch(function (error) {
+      console.log(error);
+      //TODO: FailPage
+    });
   };
 
   validateFields = () => {
@@ -292,4 +303,4 @@ class RegisterForm extends Component {
   }
 }
 
-export default RegisterForm;
+export default withRouter(RegisterForm);

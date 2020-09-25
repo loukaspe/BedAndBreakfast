@@ -22,15 +22,7 @@ class Authenticator {
 
   register(data) {
     return axios
-      .post(API_BASE_URL + API_REGISTER_ROUTE, data)
-      .then(function (response) {
-        console.log(response.data);
-        //TODO: SuccessPage
-      })
-      .catch(function (error) {
-        console.log(error);
-        //TODO: FailPage
-      });
+      .post(API_BASE_URL + API_REGISTER_ROUTE, data);
   }
 
   getCurrentUser() {
