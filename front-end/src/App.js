@@ -8,6 +8,7 @@ import Results from "./components/pages/results";
 import Room from "./components/pages/room";
 import RegistrationSuccess from "./components/pages/registrationSuccess";
 import ReservationSuccess from "./components/pages/reservationSuccess";
+import User from "./components/pages/user";
 
 function App() {
   return (
@@ -19,6 +20,7 @@ function App() {
           <Route path="/hostRoom" exact component={HostRoom} />
           <Route path="/results" exact component={Results} />
           <Route path="/room" exact component={Room} />
+          <Route path="/profile" exact component={User} />
           <Route path="/registrationSuccess" exact component={RegistrationSuccess} />
           <Route path="/reservationSuccess" exact component={ReservationSuccess} />
 
