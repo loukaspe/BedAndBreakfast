@@ -6,6 +6,8 @@ import Register from "./components/pages/register";
 import HostRoom from "./components/pages/hostRoom";
 import Results from "./components/pages/results";
 import Room from "./components/pages/room";
+import RegistrationSuccess from "./components/pages/registrationSuccess";
+import ReservationSuccess from "./components/pages/reservationSuccess";
 
 function App() {
   return (
@@ -17,6 +19,9 @@ function App() {
           <Route path="/hostRoom" exact component={HostRoom} />
           <Route path="/results" exact component={Results} />
           <Route path="/room" exact component={Room} />
+          <Route path="/registrationSuccess" exact component={RegistrationSuccess} />
+          <Route path="/reservationSuccess" exact component={ReservationSuccess} />
+
         </div>
       </BrowserRouter>
     </div>
